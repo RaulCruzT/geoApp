@@ -9,11 +9,11 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  IonText,
 } from '@ionic/angular/standalone';
 import { LocationService } from './services/location.service';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { ElapsedTimeService } from './services/elapsed-time.service';
 
 @Component({
   selector: 'app-root',
@@ -32,15 +32,18 @@ import { Subscription } from 'rxjs';
   ],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  locations: { lat: number; lng: number; timestamp: string }[] = [];
+  public locations: { lat: number; lng: number; timestamp: string }[] = [];
   private locationSub!: Subscription;
+  public elapsedTime: number = 0;
 
   constructor(
     private platform: Platform,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private elapsedTimeService: ElapsedTimeService
   ) {}
 
   async ngOnInit() {
+    // this.elapsedTime = await this.elapsedTimeService.getElapsedTime();
     await this.platform.ready();
     await this.locationService.init();
 

@@ -5,9 +5,16 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div class="ion-margin-bottom">
+    <ion-label color="primary">
+      ⏱ Tiempo transcurrido: {{ elapsedTime }} segundos
+    </ion-label>
+  </div>
+
   <ion-button expand="full" (click)="testSave()">
     Guardar ubicación manual
   </ion-button>
+
   <ion-button expand="full" color="danger" (click)="clearHistory()">
     Borrar historial
   </ion-button>
@@ -16,7 +23,7 @@
     <ion-item *ngFor="let loc of locations">
       <ion-label>
         <h2>Lat: {{ loc.lat.toFixed(6) }}, Lng: {{ loc.lng.toFixed(6) }}</h2>
-        <p>{{ loc.timestamp | date:'medium' }}</p>
+        <p>{{ loc.timestamp | date: 'medium' }}</p>
       </ion-label>
     </ion-item>
   </ion-list>
