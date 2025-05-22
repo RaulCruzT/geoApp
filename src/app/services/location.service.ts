@@ -7,15 +7,20 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { registerPlugin } from '@capacitor/core';
 import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
 
+import { BehaviorSubject } from 'rxjs';
+
 // Registrar plugin BackgroundGeolocation
 const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
   private readonly STORAGE_KEY = 'location_history';
+  private locationHistorySubject = new BehaviorSubject<{ lat: number; lng: number; timestamp: string }[]>([]);
+  public locationHistory$ = this.locationHistorySubject.asObservable();
 
   constructor() {
     this.listenToAppState();
+    this.loadInitialHistory();
   }
 
   async init() {
@@ -23,10 +28,7 @@ export class LocationService {
       console.log('[LocationService] Init...');
       await this.requestPermissions();
       await this.getCurrentLocation();
-
-      // ⚠️ Descomenta esto solo si sabes que el plugin está bien configurado en nativo
       await this.startBackgroundTracking();
-
       console.log('[LocationService] Inicialización completa');
     } catch (error) {
       console.error('[LocationService] Error durante init():', error);
@@ -119,6 +121,7 @@ export class LocationService {
         value: JSON.stringify(existing),
       });
       console.log('[LocationService] Ubicación guardada en el historial');
+      this.locationHistorySubject.next(existing);
     } catch (error) {
       console.error('[LocationService] Error guardando ubicación:', error);
     }
@@ -138,22 +141,28 @@ export class LocationService {
     try {
       await Preferences.remove({ key: this.STORAGE_KEY });
       console.log('[LocationService] Historial de ubicaciones borrado');
+      this.locationHistorySubject.next([]);
     } catch (error) {
       console.error('[LocationService] Error al borrar historial:', error);
     }
   }
 
-async saveCurrentLocationManually() {
-  try {
-    const coordinates = await Geolocation.getCurrentPosition();
-    await this.saveLocation({
-      lat: coordinates.coords.latitude,
-      lng: coordinates.coords.longitude,
-      timestamp: new Date().toISOString(),
-    });
-    console.log('Ubicación actual guardada manualmente');
-  } catch (error) {
-    console.error('Error al obtener o guardar ubicación manualmente:', error);
+  async saveCurrentLocationManually() {
+    try {
+      const coordinates = await Geolocation.getCurrentPosition();
+      await this.saveLocation({
+        lat: coordinates.coords.latitude,
+        lng: coordinates.coords.longitude,
+        timestamp: new Date().toISOString(),
+      });
+      console.log('Ubicación actual guardada manualmente');
+    } catch (error) {
+      console.error('Error al obtener o guardar ubicación manualmente:', error);
+    }
   }
-}
+
+  private async loadInitialHistory() {
+    const history = await this.getLocationHistory();
+    this.locationHistorySubject.next(history);
+  }
 }

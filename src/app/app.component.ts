@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import {
   IonHeader,
@@ -13,13 +13,13 @@ import {
 } from '@ionic/angular/standalone';
 import { LocationService } from './services/location.service';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
   imports: [
-    IonText,
     IonLabel,
     IonItem,
     IonList,
@@ -31,8 +31,9 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   locations: { lat: number; lng: number; timestamp: string }[] = [];
+  private locationSub!: Subscription;
 
   constructor(
     private platform: Platform,
@@ -42,37 +43,22 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     await this.platform.ready();
     await this.locationService.init();
-    await this.loadHistory();
+
+    this.locationSub = this.locationService.locationHistory$.subscribe(history => {
+      this.locations = history;
+      console.log('[AppComponent] Historial actualizado:', this.locations);
+    });
   }
 
-  // ✅ Cargar historial
-  async loadHistory() {
-    try {
-      this.locations = await this.locationService.getLocationHistory();
-      console.log('[AppComponent] Historial cargado:', this.locations);
-    } catch (error) {
-      console.error('[AppComponent] Error al cargar historial:', error);
-    }
-  }
-
-  // ✅ Guardar ubicación manual y actualizar historial
   async testSave() {
-    try {
-      await this.locationService.saveCurrentLocationManually();
-      await this.loadHistory();
-    } catch (error) {
-      console.error('[AppComponent] Error al guardar ubicación manual:', error);
-    }
+    await this.locationService.saveCurrentLocationManually();
   }
 
-  // ✅ Borrar historial
   async clearHistory() {
-    try {
-      await this.locationService.clearLocationHistory();
-      this.locations = [];
-      console.log('[AppComponent] Historial eliminado');
-    } catch (error) {
-      console.error('[AppComponent] Error al borrar historial:', error);
-    }
+    await this.locationService.clearLocationHistory();
+  }
+
+  ngOnDestroy() {
+    this.locationSub?.unsubscribe();
   }
 }

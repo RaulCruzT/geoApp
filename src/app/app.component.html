@@ -5,32 +5,23 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
-  <ion-button expand="block" color="danger" (click)="clearHistory()">
+  <ion-button expand="full" (click)="testSave()">
+    Guardar ubicación manual
+  </ion-button>
+  <ion-button expand="full" color="danger" (click)="clearHistory()">
     Borrar historial
   </ion-button>
 
-  <ion-button expand="block" (click)="testSave()">
-    Guardar ubicación manual y mostrar historial
-  </ion-button>
-
   <ion-list *ngIf="locations.length > 0; else noLocations">
-    <ion-item *ngFor="let loc of locations; let i = index">
+    <ion-item *ngFor="let loc of locations">
       <ion-label>
-        <h2>#{{ i + 1 }}</h2>
-        <p>
-          Lat: {{ loc.lat | number: "1.6-6" }},
-          Lng: {{ loc.lng | number: "1.6-6" }}
-        </p>
-        <p>{{ loc.timestamp | date: "medium" }}</p>
+        <h2>Lat: {{ loc.lat.toFixed(6) }}, Lng: {{ loc.lng.toFixed(6) }}</h2>
+        <p>{{ loc.timestamp | date:'medium' }}</p>
       </ion-label>
     </ion-item>
   </ion-list>
 
   <ng-template #noLocations>
-    <ion-text color="medium">
-      <p>No hay ubicaciones guardadas.</p>
-    </ion-text>
+    <p>No hay ubicaciones guardadas.</p>
   </ng-template>
-
 </ion-content>
