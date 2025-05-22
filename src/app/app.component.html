@@ -1,0 +1,21 @@
+<div class="location-history-container">
+  <h2>Historial de ubicaciones</h2>
+
+  <button (click)="clearHistory()" class="btn-clear">Borrar historial</button>
+
+  <button (click)="testSave()">
+    Guardar ubicación manual y mostrar historial
+  </button>
+
+  <ul *ngIf="locations.length > 0; else noLocations">
+    <li *ngFor="let loc of locations; let i = index">
+      <strong>#{{ i + 1 }}</strong> - Lat: {{ loc.lat | number : "1.6-6" }},
+      Lng: {{ loc.lng | number : "1.6-6" }} -
+      {{ loc.timestamp | date : "medium" }}
+    </li>
+  </ul>
+
+  <ng-template #noLocations>
+    <p>No hay ubicaciones guardadas.</p>
+  </ng-template>
+</div>
