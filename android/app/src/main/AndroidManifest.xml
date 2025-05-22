@@ -31,7 +31,7 @@
 
         <!-- SERVICIO DE BACKGROUND -->
         <service
-            android:name="com.getcapacitor.community.backgroundgeolocation.BackgroundGeolocationService"
+            android:name="io.ionic.starter.BackgroundGeolocationService"
             android:foregroundServiceType="location"
             android:enabled="true"
             android:exported="true" />
