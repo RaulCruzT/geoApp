@@ -1,13 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonText,
+} from '@ionic/angular/standalone';
 import { LocationService } from './services/location.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, CommonModule],
+  imports: [
+    IonText,
+    IonLabel,
+    IonItem,
+    IonList,
+    IonButton,
+    IonContent,
+    IonTitle,
+    IonToolbar,
+    IonHeader,
+    CommonModule,
+  ],
 })
 export class AppComponent implements OnInit {
   locations: { lat: number; lng: number; timestamp: string }[] = [];
@@ -38,8 +59,8 @@ export class AppComponent implements OnInit {
     console.log('Historial eliminado');
   }
 
-async testSave() {
-  await this.locationService.saveCurrentLocationManually();
-  await this.showHistory();
-}
+  async testSave() {
+    await this.locationService.saveCurrentLocationManually();
+    await this.showHistory();
+  }
 }
