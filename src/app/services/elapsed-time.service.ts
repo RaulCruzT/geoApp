@@ -12,6 +12,7 @@ export class ElapsedTimeService {
   async getElapsedTime(): Promise<number> {
     try {
       const result = await ElapsedTimePlugin.getElapsedTime();
+      console.log("[ElapsedTimeService] - getElapsedTime - result", result);
       return result.elapsedTime; // Devuelve el tiempo transcurrido
     } catch (error) {
       console.error('Error al obtener el tiempo transcurrido:', error);

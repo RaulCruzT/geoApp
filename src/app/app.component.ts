@@ -43,8 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    // this.elapsedTime = await this.elapsedTimeService.getElapsedTime();
     await this.platform.ready();
+    this.elapsedTime = await this.elapsedTimeService.getElapsedTime();
     await this.locationService.init();
 
     this.locationSub = this.locationService.locationHistory$.subscribe(history => {
