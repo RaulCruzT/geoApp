@@ -28,3 +28,6 @@ project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacit
 
 include ':elapsed-time-plugin'
 project(':elapsed-time-plugin').projectDir = new File('../plugins/elapsed-time-plugin/android')
+
+include ':developer-mode-plugin'
+project(':developer-mode-plugin').projectDir = new File('../plugins/developer-mode-plugin/android')

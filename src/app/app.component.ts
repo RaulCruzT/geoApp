@@ -14,6 +14,7 @@ import { LocationService } from './services/location.service';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ElapsedTimeService } from './services/elapsed-time.service';
+import { DeveloperModeService } from './services/developer-mode.service';
 
 @Component({
   selector: 'app-root',
@@ -35,15 +36,18 @@ export class AppComponent implements OnInit, OnDestroy {
   public locations: { lat: number; lng: number; timestamp: string }[] = [];
   private locationSub!: Subscription;
   public elapsedTime: number = 0;
+  public developerMode: boolean = false;
 
   constructor(
     private platform: Platform,
     private locationService: LocationService,
-    private elapsedTimeService: ElapsedTimeService
+    private elapsedTimeService: ElapsedTimeService,
+    private developerModeService: DeveloperModeService
   ) {}
 
   async ngOnInit() {
     await this.platform.ready();
+    this.developerMode = await this.developerModeService.isDeveloperMode();
     this.elapsedTime = await this.elapsedTimeService.getElapsedTime();
     await this.locationService.init();
 
