@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Platform, AlertController } from '@ionic/angular';
 import {
   IonHeader,
   IonToolbar,
@@ -39,46 +39,148 @@ export class AppComponent implements OnInit, OnDestroy {
   public elapsedTime: number = 0;
   public developerMode: boolean = false;
 
-  public isConnected: boolean = true; // <-- Variable para guardar el estado de red
-  private networkListener: any; // <-- Guardar la suscripción para removerla luego
+  public isConnected: boolean = true;
+  private networkListener: any;
 
   constructor(
     private platform: Platform,
     private locationService: LocationService,
     private elapsedTimeService: ElapsedTimeService,
-    private developerModeService: DeveloperModeService
+    private developerModeService: DeveloperModeService,
+    private alertController: AlertController,
   ) {}
 
   async ngOnInit() {
-    await this.platform.ready();
+    try {
+      await this.platform.ready();
 
-    this.developerMode = await this.developerModeService.isDeveloperMode();
-    this.elapsedTime = await this.elapsedTimeService.getElapsedTime();
+      try {
+        this.developerMode = await this.developerModeService.isDeveloperMode();
+        if (this.developerMode) {
+          await this.showAlert(
+            'Modo desarrollador',
+            'La app está corriendo en modo desarrollador.',
+          );
+        }
+      } catch (err) {
+        console.error(
+          '[AppComponent] Error al verificar modo desarrollador:',
+          err,
+        );
+        await this.showAlert(
+          'Error',
+          'No se pudo verificar si está en modo desarrollador.',
+        );
+      }
 
-    const status: NetworkStatus = await Network.getStatus();
-    this.isConnected = status.connected;
-    console.log('[AppComponent] Estado inicial de red:', status);
+      try {
+        this.elapsedTime = await this.elapsedTimeService.getElapsedTime();
+      } catch (err) {
+        console.error(
+          '[AppComponent] Error al obtener el tiempo transcurrido:',
+          err,
+        );
+        await this.showAlert(
+          'Error',
+          'No se pudo obtener el tiempo transcurrido.',
+        );
+      }
 
-    this.networkListener = Network.addListener('networkStatusChange', (status: NetworkStatus) => {
-      this.isConnected = status.connected;
-      console.log('[AppComponent] Cambio de red:', status);
-    });
+      try {
+        const status: NetworkStatus = await Network.getStatus();
+        this.isConnected = status.connected;
+        console.log('[AppComponent] Estado inicial de red:', status);
+      } catch (err) {
+        console.error('[AppComponent] Error al obtener estado de red:', err);
+      }
 
-    await this.locationService.init();
+      try {
+        this.networkListener = Network.addListener(
+          'networkStatusChange',
+          (status: NetworkStatus) => {
+            this.isConnected = status.connected;
+            console.log('[AppComponent] Cambio de red:', status);
+          },
+        );
+      } catch (err) {
+        console.error(
+          '[AppComponent] Error al suscribirse a cambios de red:',
+          err,
+        );
+      }
 
-    this.locationSub = this.locationService.locationHistory$.subscribe(history => {
-      this.locations = history;
-      console.log('[AppComponent] Historial actualizado:', this.locations);
-    });
+      try {
+        await this.locationService.init();
+      } catch (err) {
+        console.error(
+          '[AppComponent] Error al inicializar el servicio de ubicación:',
+          err,
+        );
+        await this.showAlert(
+          'Error',
+          'No se pudo inicializar el servicio de ubicación.',
+        );
+      }
 
+      try {
+        this.locationSub = this.locationService.locationHistory$.subscribe(
+          (history) => {
+            this.locations = history;
+            console.log(
+              '[AppComponent] Historial actualizado:',
+              this.locations,
+            );
+          },
+        );
+      } catch (err) {
+        console.error(
+          '[AppComponent] Error al suscribirse al historial de ubicaciones:',
+          err,
+        );
+        await this.showAlert(
+          'Error',
+          'No se pudo suscribir al historial de ubicaciones.',
+        );
+      }
+    } catch (globalErr) {
+      console.error('[AppComponent] Error inesperado en ngOnInit:', globalErr);
+    }
   }
 
-  async testSave() {
-    await this.locationService.saveCurrentLocationManually();
+  public async testSave() {
+    try {
+      await this.locationService.saveCurrentLocationManually();
+    } catch (err) {
+      console.error('[AppComponent] Error al guardar ubicación manual:', err);
+      await this.showAlert(
+        'Error',
+        'No se pudo guardar manualmente la ubicación. Intentelo de nuevo.',
+      );
+    }
   }
 
-  async clearHistory() {
-    await this.locationService.clearLocationHistory();
+  public async clearHistory() {
+    try {
+      await this.locationService.clearLocationHistory();
+    } catch (err) {
+      console.error(
+        '[AppComponent] Error al limpiar historial de ubicaciones:',
+        err,
+      );
+      await this.showAlert(
+        'Error',
+        'No se pudo limpiar el historial de ubicaciones. Intentelo de nuevo.',
+      );
+    }
+  }
+
+  private async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
   }
 
   ngOnDestroy() {
