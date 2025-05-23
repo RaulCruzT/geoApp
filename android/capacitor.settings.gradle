@@ -20,14 +20,17 @@ project(':capacitor-keyboard').projectDir = new File('../node_modules/@capacitor
 include ':capacitor-local-notifications'
 project(':capacitor-local-notifications').projectDir = new File('../node_modules/@capacitor/local-notifications/android')
 
+include ':capacitor-network'
+project(':capacitor-network').projectDir = new File('../node_modules/@capacitor/network/android')
+
 include ':capacitor-preferences'
 project(':capacitor-preferences').projectDir = new File('../node_modules/@capacitor/preferences/android')
 
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
-include ':elapsed-time-plugin'
-project(':elapsed-time-plugin').projectDir = new File('../plugins/elapsed-time-plugin/android')
-
 include ':developer-mode-plugin'
 project(':developer-mode-plugin').projectDir = new File('../plugins/developer-mode-plugin/android')
+
+include ':elapsed-time-plugin'
+project(':elapsed-time-plugin').projectDir = new File('../plugins/elapsed-time-plugin/android')

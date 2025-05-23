@@ -15,10 +15,11 @@ dependencies {
     implementation project(':capacitor-haptics')
     implementation project(':capacitor-keyboard')
     implementation project(':capacitor-local-notifications')
+    implementation project(':capacitor-network')
     implementation project(':capacitor-preferences')
     implementation project(':capacitor-status-bar')
-    implementation project(':elapsed-time-plugin')
     implementation project(':developer-mode-plugin')
+    implementation project(':elapsed-time-plugin')
 
 }
 

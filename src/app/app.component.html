@@ -15,6 +15,11 @@
       ⏱ Tiempo transcurrido: {{ elapsedTime }} segundos
     </ion-label>
   </div>
+  <div class="ion-margin-bottom">
+    <ion-label color="primary">
+      Conectado a la red: {{ isConnected ? 'Si' : 'No' }}
+    </ion-label>
+  </div>
 
   <ion-button expand="full" (click)="testSave()">
     Guardar ubicación manual
